@@ -1,0 +1,47 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vs-cadvisor
+  namespace: istio-ingress
+spec:
+  gateways:
+    - istio-ingress-private
+  hosts:
+    - cadvisor.zaki14.com
+  http:
+    - corsPolicy:
+        allowCredentials: true
+        allowHeaders:
+          - DNT
+          - User-Agent
+          - X-Requested-With
+          - If-Modified-Since
+          - Cache-Control
+          - Content-Type
+          - Range
+          - Authorization
+          - authorization
+          - Channel-Id
+          - X-External-Id
+          - X-Partner-Id
+          - X-Signature
+          - X-Timestamp
+        allowMethods:
+          - POST
+          - GET
+          - OPTIONS
+          - PUT
+          - DELETE
+        allowOrigins:
+          - exact: '*'
+        maxAge: 24h
+      match:
+        - uri:
+            prefix: /
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: cadvisor.monitoring.svc.cluster.local
+            port:
+              number: 8080
