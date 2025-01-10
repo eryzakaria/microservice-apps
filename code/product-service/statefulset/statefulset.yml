@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: product-service
+  namespace: release
+spec:
+  serviceName: "product-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: eryzakaria14/product-service:v1
+          ports:
+            - containerPort: 8989
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: release
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8989
+      name: product-service
+  selector:
+    app: product-service
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: product-service-hpa
+  namespace: release
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: product-service
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 50

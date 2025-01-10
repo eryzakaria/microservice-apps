@@ -1,0 +1,6 @@
+---
+- name: Install Docker on AWS server
+  hosts: dev_proxy
+  become: true
+  roles:
+    - docker

@@ -1,0 +1,6 @@
+---
+- name: Install Nginx Proxy Manager
+  hosts: dev_proxy
+  become: true
+  roles:
+    - jenkins

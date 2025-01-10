@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "eryzakaria14/user-service"
+        KUBE_NAMESPACE = "release"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh "rm -rf rollouts-demo"
+                    sh "git clone https://github.com/eryzakaria/rollouts-demo.git"
+                    echo "Building Docker image..."
+                    sh "ls -al"
+                    sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} rollouts-demo/."
+                    sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                    sh """
+                        sed -i 's|image: eryzakaria14/user-service:.*|image: eryzakaria14/user-service:${env.BUILD_NUMBER}|g' rollouts-demo/deployment/deployment.yml
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    echo "Deploying to Kubernetes..."
+                    sh """
+                        kubectl apply -f rollouts-demo/deployment/deployment.yml
+                        kubectl apply -f rollouts-demo/deployment/virtualservice.yml
+                    """
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed'
+        }
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
+        }
+    }
+}

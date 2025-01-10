@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: vs-my-nginx
+  namespace: release
+spec:
+  hosts:
+  - "nginx.zaki14.com"
+  gateways:
+  - istio-ingressgateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: my-nginx.production-ns.svc.cluster.local

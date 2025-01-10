@@ -1,0 +1,6 @@
+[dev_proxy]
+10.10.10.20 ansible_host=10.10.10.20
+
+[all:vars]
+ansible_user=vagrant
+ansible_ssh_private_key_file=vagrant.pem
