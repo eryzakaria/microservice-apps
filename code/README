@@ -1,0 +1,8 @@
+# CARA SETUP ISTIO di kubernetes
+
+1). curl -L https://istio.io/downloadIstio | sh -
+2). cd istio-1.24.2
+3). export PATH=$PWD/bin:$PATH
+4). istioctl install 
+5). kubectl label namespace {NAMESPACE} istio-injection=enabled
+6). kubectl apply -f gateway.yml
